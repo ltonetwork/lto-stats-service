@@ -44,7 +44,7 @@ export class AppExceptionFilter implements ExceptionFilter {
     const path = request.path;
     const method = request.method;
     const exResponse = exception.getResponse() as any;
-    const message = exResponse === 'string' ? exResponse : (exResponse.message || exResponse.error);
+    const message = exResponse === 'string' || Array.isArray(exResponse) ? exResponse : (exResponse.message || exResponse.error);
     const stack = exception.stack;
 
     return this.output(response, { status, path, method, message, stack });

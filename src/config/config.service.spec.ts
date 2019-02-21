@@ -35,7 +35,7 @@ describe('ConfigService', () => {
     });
 
     test('Mongo Default Url', () => {
-      expect(configService.getMongoDefaultUrl()).toEqual('mongodb://localhost:27017/lt-stats');
+      expect(configService.getMongoDefaultUrl()).toEqual('mongodb://localhost:27017/lto-stats');
     });
 
     test('getMonitorInterval', () => {

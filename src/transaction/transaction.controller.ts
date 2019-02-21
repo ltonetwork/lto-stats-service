@@ -25,7 +25,7 @@ export class TransactionController {
     const startDate = params.startdate ? moment(params.startdate) : endDate.clone().subtract(1, 'week');
     const granularity = this.tx.getGranularity(startDate, endDate, params.granularity);
 
-    const transactions = await this.tx.getTransactions(startDate, endDate, granularity);
+    const transactions = await this.tx.getTransactions(startDate, endDate, granularity, params.type);
 
     return res.status(200).json(transactions);
   }

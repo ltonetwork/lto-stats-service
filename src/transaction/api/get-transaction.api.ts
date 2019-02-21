@@ -10,7 +10,7 @@ export class GetTransactionParams {
 
   @ApiModelProperty({
     example: '2019-01-31',
-    required: false
+    required: false,
   })
   readonly enddate: string;
 
@@ -24,4 +24,17 @@ export class GetTransactionParams {
     ]
   })
   readonly granularity: TransactionGranularity;
+
+  @ApiModelProperty({
+    example: 15,
+    required: false,
+    enum: [
+      4,
+      8,
+      9,
+      11,
+      15,
+    ]
+  })
+  readonly type: number;
 }
