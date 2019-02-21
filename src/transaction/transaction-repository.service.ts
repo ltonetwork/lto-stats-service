@@ -22,8 +22,17 @@ export class TransactionRepositoryService {
     return this.transactionModel.findOneAndUpdate(data, { $inc: { transactions: increment} }, { new: true, upsert: true });
   }
 
-  find(startDate: Date, endDate: Date, granularity: TransactionGranularity) {
-    // @ts-ignore
-    return this.transactionModel.find({date: {$gte: startDate}, date: {$lte: endDate}, granularity});
+  find(startDate: Date, endDate: Date, granularity: TransactionGranularity, type?: number) {
+
+    const match: any = {
+      date: {$gte: startDate, $lte: endDate},
+      granularity
+    };
+
+    if (type) {
+      match.type = type;
+    }
+
+    return this.transactionModel.aggregate([{$match: match}, { $group: { _id: "$date", transactions: { $sum: '$transactions'}}}, {$sort: {_id: 1}}]);
   }
 }

@@ -31,8 +31,12 @@ export class TransactionService {
     return Promise.all(promises);
   }
 
-  getTransactions(startDate: Moment, endDate: Moment, granularity: TransactionGranularity): Promise<TransactionInstanceType[]> {
-    return this.transactionRepository.find(startDate.toDate(), endDate.toDate(), granularity);
+  async getTransactions(startDate: Moment, endDate: Moment, granularity: TransactionGranularity, type?: number): Promise<TransactionInstanceType[]> {
+    return (await this.transactionRepository.find(startDate.toDate(), endDate.toDate(), granularity, Number(type))).map((tx) => {
+      tx.date = tx._id;
+      delete tx._id;
+      return tx;
+    });
   }
 
   getGranularity(startDate: Moment, endDate: Moment, granularity?: TransactionGranularity) {
