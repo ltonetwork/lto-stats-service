@@ -37,7 +37,7 @@ export default {
   mongodb: {
     doc: 'MongoDB connection urls',
     url: {
-      default: 'mongodb://localhost:27017/lt-stats',
+      default: 'mongodb://localhost:27017/lto-stats',
       env: 'MONGODB_URL'
     }
   },
