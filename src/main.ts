@@ -5,6 +5,7 @@ import { INestApplication } from '@nestjs/common';
 import { ConfigService } from './config/config.service';
 import { LoggerService } from './logger/logger.service';
 import helmet from 'helmet';
+import cors from 'cors';
 import {MonitorService} from './indexer/monitor.service';
 
 async function swagger(app: INestApplication) {
@@ -25,6 +26,7 @@ async function bootstrap() {
   swagger(app);
 
   app.use(helmet());
+  app.use(cors());
 
   const config = app.get<ConfigService>(ConfigService);
   await app.listenAsync(config.getPort());
