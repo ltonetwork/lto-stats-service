@@ -38,25 +38,25 @@ export default {
     doc: 'MongoDB connection urls',
     url: {
       default: 'mongodb://localhost:27017/lto-stats',
-      env: 'MONGODB_URL'
-    }
+      env: 'MONGODB_URL',
+    },
   },
   monitor: {
     interval: {
       default: 5000,
-      env: 'MONITOR_INTERVAL'
+      env: 'MONITOR_INTERVAL',
     },
     restart_sync: {
       default: false,
-      env: "MONITOR_RESTART_SYNC"
-    }
+      env: 'MONITOR_RESTART_SYNC',
+    },
   },
   lto: {
     doc: 'Global config of the LTO node',
     node: {
       url: {
         default: 'http://localhost:6869',
-        env: 'LTO_NODE_URL'
+        env: 'LTO_NODE_URL',
       },
     },
   },
