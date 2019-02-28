@@ -4,6 +4,7 @@ import { MonitorService } from './monitor.service';
 import { IndexerService } from './indexer.service';
 import { NodeService } from '../node/node.service';
 import { MonitorRespositoryService } from './monitor-respository.service';
+import { Block } from './interfaces/block.interface';
 
 describe('MonitorService', () => {
   let module: TestingModule;
@@ -25,7 +26,7 @@ describe('MonitorService', () => {
       getBlock: jest.spyOn(nodeService, 'getBlock')
         .mockImplementation(() => Promise.resolve({ height: 100, transactions: [] })),
       getBlocks: jest.spyOn(nodeService, 'getBlocks')
-        .mockImplementation(() => Promise.resolve([{ height: 100, transactions: [] }])),
+        .mockImplementation(() => Promise.resolve([{ height: 100, transactions: [] } as Block])),
     };
     const state = {
       getProcessingHeight: jest.spyOn(monitorStateService, 'getProcessingHeight')
@@ -36,6 +37,7 @@ describe('MonitorService', () => {
     const indexer = {
       index: jest.spyOn(indexerService, 'index')
         .mockImplementation(() => Promise.resolve(true)),
+      indexBlock: jest.spyOn(indexerService, 'indexBlock'),
     };
 
     return { monitor, node, state, indexer };
@@ -92,6 +94,7 @@ describe('MonitorService', () => {
     test('should process the block', async () => {
       const spies = spy();
       spies.monitor.processTransaction.mockImplementation();
+      spies.indexer.indexBlock.mockImplementation();
 
       const block = {
         height: 100, transactions: [
@@ -101,6 +104,7 @@ describe('MonitorService', () => {
       };
       await monitorService.processBlock(block as any);
 
+      expect(spies.indexer.indexBlock.mock.calls.length).toBe(1);
       expect(spies.monitor.processTransaction.mock.calls.length).toBe(2);
       expect(spies.monitor.processTransaction.mock.calls[0][0]).toEqual(block.transactions[0]);
       expect(spies.monitor.processTransaction.mock.calls[1][0]).toEqual(block.transactions[1]);
