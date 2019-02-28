@@ -17,7 +17,7 @@ export class MonitorService {
     private readonly config: ConfigService,
     private readonly node: NodeService,
     private readonly indexer: IndexerService,
-    private readonly monitorState: MonitorRespositoryService
+    private readonly monitorState: MonitorRespositoryService,
   ) {}
 
   async start() {
@@ -53,7 +53,6 @@ export class MonitorService {
         `anchor: processing blocks ${range.from} to ${range.to}`,
       );
       const blocks = await this.node.getBlocks(range.from, range.to);
-      blocks.sort((a, b) => a.timestamp - b.timestamp);
 
       for (const block of blocks) {
         await this.processBlock(block);
@@ -68,11 +67,13 @@ export class MonitorService {
   async processBlock(block: Block) {
     this.logger.debug(`anchor: processing block ${block.height}`);
 
-    await this.indexer.indexBlock(block);
+    await this.indexer.indexBlock(block, await this.isMonitorSynced());
 
-    block.transactions.forEach(async (transaction, index) => {
-      await this.processTransaction(transaction, block.height, index);
-    });
+    let position = 0;
+    for (const transaction of block.transactions) {
+      await this.processTransaction(transaction, block.height, position);
+      position++;
+    }
   }
 
   async processTransaction(
@@ -81,5 +82,15 @@ export class MonitorService {
     position: number,
   ) {
     const success = await this.indexer.index(transaction, blockHeight);
+  }
+
+  async isMonitorSynced() {
+    const resp = await this.node.getNodeStatus();
+    if (resp && resp.blockchainHeight) {
+      const processingHeight = await this.monitorState.getProcessingHeight();
+      return (resp.blockchainHeight - 1) <= processingHeight;
+    }
+
+    return false;
   }
 }

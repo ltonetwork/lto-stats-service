@@ -3,12 +3,12 @@ import { healthProviders } from './health.providers';
 import { HealthController } from './health.controller';
 import { HealthService } from './health.service';
 import { ConfigModule } from '../config/config.module';
-import { NodeModule } from '../node/node.module';
+import { IndexerModule } from '../indexer/indexer.module';
 
 export const HealthModuleConfig = {
   imports: [
     ConfigModule,
-    NodeModule,
+    IndexerModule,
   ],
   controllers: [HealthController],
   providers: [

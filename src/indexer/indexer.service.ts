@@ -18,8 +18,8 @@ export class IndexerService {
   ) {
   }
 
-  indexBlock(block: Block): Promise<BlockTimeInstanceType[]> {
-    return this.blockService.indexBlockTimes(block);
+  indexBlock(block: Block, calculate: boolean): Promise<BlockTimeInstanceType[]> {
+    return this.blockService.indexBlockTimes(block, calculate);
   }
 
   /**

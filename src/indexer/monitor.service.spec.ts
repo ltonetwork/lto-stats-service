@@ -105,6 +105,7 @@ describe('MonitorService', () => {
       await monitorService.processBlock(block as any);
 
       expect(spies.indexer.indexBlock.mock.calls.length).toBe(1);
+      expect(spies.indexer.indexBlock.mock.calls[0][0]).toEqual(block);
       expect(spies.monitor.processTransaction.mock.calls.length).toBe(2);
       expect(spies.monitor.processTransaction.mock.calls[0][0]).toEqual(block.transactions[0]);
       expect(spies.monitor.processTransaction.mock.calls[1][0]).toEqual(block.transactions[1]);
