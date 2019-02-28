@@ -1,5 +1,5 @@
 export default {
   log: {
-    level: 'debug',
-  }
+    level: 'info',
+  },
 };

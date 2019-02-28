@@ -17,7 +17,7 @@ describe('TransactionService', () => {
     await module.close();
   });
 
-  describe('incrementByTypeAndTime', () => {
+  describe('indexTransactionByTypeAndTime', () => {
     test('', () => {
 
     });

@@ -6,7 +6,7 @@ import {
   Transaction,
   TransactionGranularity,
   TransactionInstanceType,
-  TransactionModelType
+  TransactionModelType,
 } from './models/transaction.model';
 
 @Injectable()
@@ -26,13 +26,13 @@ export class TransactionRepositoryService {
 
     const match: any = {
       date: {$gte: startDate, $lte: endDate},
-      granularity
+      granularity,
     };
 
     if (type) {
       match.type = type;
     }
 
-    return this.transactionModel.aggregate([{$match: match}, { $group: { _id: "$date", transactions: { $sum: '$transactions'}}}, {$sort: {_id: 1}}]);
+    return this.transactionModel.aggregate([{$match: match}, { $group: { _id: '$date', transactions: { $sum: '$transactions'}}}, {$sort: {_id: 1}}]);
   }
 }

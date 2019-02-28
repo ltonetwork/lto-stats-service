@@ -20,8 +20,8 @@ export class GetTransactionParams {
     enum: [
       'day',
       'hour',
-      'sec'
-    ]
+      'sec',
+    ],
   })
   readonly granularity: TransactionGranularity;
 
@@ -34,7 +34,7 @@ export class GetTransactionParams {
       9,
       11,
       15,
-    ]
+    ],
   })
   readonly type: number;
 }

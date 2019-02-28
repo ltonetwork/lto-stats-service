@@ -6,7 +6,7 @@ export type TransactionModelType = ModelType<Transaction>;
 export enum TransactionGranularity {
   Sec = 'sec',
   Hour = 'hour',
-  Day = 'day'
+  Day = 'day',
 }
 
 export class Transaction extends Typegoose {

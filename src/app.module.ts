@@ -8,6 +8,7 @@ import { appProviders } from './app.providers';
 import {DatabaseModule} from './database/database.module';
 import {IndexerModule} from './indexer/indexer.module';
 import {TransactionModule} from './transaction/transaction.module';
+import { BlockModule } from './block/block.module';
 
 export const AppModuleConfig = {
   imports: [
@@ -17,7 +18,8 @@ export const AppModuleConfig = {
     IndexerModule,
     InfoModule,
     LoggerModule,
-    TransactionModule
+    TransactionModule,
+    BlockModule,
   ],
   controllers: [AppController],
   providers: [...appProviders],

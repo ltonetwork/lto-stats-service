@@ -8,6 +8,7 @@ import { NodeModule } from '../node/node.module';
 import { TransactionModule } from '../transaction/transaction.module';
 import { DatabaseModule } from '../database/database.module';
 import { indexerProviders } from './indexer.providers';
+import { BlockModule } from '../block/block.module';
 
 export const IndexerModuleConfig = {
   imports: [
@@ -15,7 +16,8 @@ export const IndexerModuleConfig = {
     ConfigModule,
     NodeModule,
     TransactionModule,
-    DatabaseModule
+    BlockModule,
+    DatabaseModule,
   ],
   controllers: [],
   providers: [
