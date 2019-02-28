@@ -4,12 +4,11 @@ import { TransactionService } from './transaction.service';
 import { TransactionController } from './transaction.controller';
 import { LoggerModule } from '../logger/logger.module';
 import { ConfigModule } from '../config/config.module';
-import { NodeModule } from '../node/node.module';
 import {DatabaseModule} from '../database/database.module';
 import {TransactionRepositoryService} from './transaction-repository.service';
 
 export const TransactionModuleConfig = {
-  imports: [LoggerModule, ConfigModule, NodeModule, DatabaseModule],
+  imports: [LoggerModule, ConfigModule, DatabaseModule],
   controllers: [TransactionController],
   providers: [
     TransactionService,

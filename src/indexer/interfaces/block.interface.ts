@@ -1,6 +1,8 @@
 import { Transaction } from './transaction.interface';
 
 export interface Block {
-  height;
+  height: number;
+  timestamp: number;
+  transactionCount: number;
   transactions: Array<Transaction>;
 }

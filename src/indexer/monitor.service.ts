@@ -3,16 +3,14 @@ import { IndexerService } from './indexer.service';
 import { LoggerService } from '../logger/logger.service';
 import { ConfigService } from '../config/config.service';
 import { NodeService } from '../node/node.service';
-import { Transaction } from '../transaction/interfaces/transaction.interface';
 import { MonitorRespositoryService } from './monitor-respository.service';
-import { Block } from '../transaction/interfaces/block.interface';
+import { Transaction } from './interfaces/transaction.interface';
+import { Block } from './interfaces/block.interface';
 import delay from 'delay';
 
 @Injectable()
 export class MonitorService {
   public processing: boolean;
-  public lastBlock: number;
-  public anchorToken: string;
 
   constructor(
     private readonly logger: LoggerService,
@@ -55,6 +53,7 @@ export class MonitorService {
         `anchor: processing blocks ${range.from} to ${range.to}`,
       );
       const blocks = await this.node.getBlocks(range.from, range.to);
+      blocks.sort((a, b) => a.timestamp - b.timestamp);
 
       for (const block of blocks) {
         await this.processBlock(block);
@@ -68,6 +67,8 @@ export class MonitorService {
 
   async processBlock(block: Block) {
     this.logger.debug(`anchor: processing block ${block.height}`);
+
+    await this.indexer.indexBlock(block);
 
     block.transactions.forEach(async (transaction, index) => {
       await this.processTransaction(transaction, block.height, index);

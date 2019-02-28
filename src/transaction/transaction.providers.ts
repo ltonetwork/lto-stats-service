@@ -17,5 +17,5 @@ export const transactionProviders = [
       });
     },
     inject: [DB_DEFAULT_CONNECTION],
-  }
+  },
 ];

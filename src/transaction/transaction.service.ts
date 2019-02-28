@@ -9,7 +9,7 @@ export class TransactionService {
     readonly transactionRepository: TransactionRepositoryService
   ) { }
 
-  incrementByTypeAndTime(type: number, timestamp: number): Promise<TransactionInstanceType[]> {
+  indexTransactionByTypeAndTime(type: number, timestamp: number): Promise<TransactionInstanceType[]> {
 
     const sec = moment(timestamp).utc();
     const day = moment(timestamp).utc().startOf('day').toDate();

@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { NodeApiService } from './node-api.service';
 import { LoggerService } from '../logger/logger.service';
 import { ConfigService } from '../config/config.service';
-import { Transaction } from '../transaction/interfaces/transaction.interface';
+import { Transaction } from '../indexer/interfaces/transaction.interface';
 import { AxiosResponse } from 'axios';
+import { Block } from '../indexer/interfaces/block.interface';
 
 @Injectable()
 export class NodeService {
@@ -73,7 +74,7 @@ export class NodeService {
     return response.data;
   }
 
-  async getBlocks(from: number, to: number): Promise<Array<{ height, transactions }>> {
+  async getBlocks(from: number, to: number): Promise<Array<Block>> {
     const ranges = this.getBlockRanges(from, to);
     const promises = ranges.map((range) => this.api.getBlocks(range.from, range.to));
     const responses = await Promise.all(promises);

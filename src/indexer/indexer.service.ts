@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { LoggerService } from '../logger/logger.service';
-import { Transaction } from '../transaction/interfaces/transaction.interface';
+import { Transaction } from './interfaces/transaction.interface';
 import { TransactionService } from '../transaction/transaction.service';
+import { BlockService } from '../block/block.service';
+import { Block } from './interfaces/block.interface';
+import { BlockTimeInstanceType } from '../block/models/blocktime.model';
 
 @Injectable()
 export class IndexerService {
@@ -11,7 +14,12 @@ export class IndexerService {
   constructor(
     private readonly logger: LoggerService,
     private readonly tx: TransactionService,
+    private readonly blockService: BlockService,
   ) {
+  }
+
+  indexBlock(block: Block): Promise<BlockTimeInstanceType[]> {
+    return this.blockService.indexBlockTimes(block);
   }
 
   /**
@@ -36,8 +44,7 @@ export class IndexerService {
     this.txCache.push(transaction.id);
 
     // Todo: Write indexing actions
-    await this.tx.incrementByTypeAndTime(transaction.type, transaction.timestamp);
-
+    await this.tx.indexTransactionByTypeAndTime(transaction.type, transaction.timestamp);
 
     return true;
   }
