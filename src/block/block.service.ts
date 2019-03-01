@@ -2,17 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { BlockRepositoryService } from './block-repository.service';
 import { Block } from '../indexer/interfaces/block.interface';
 import { BlockTimeGranularity, BlockTimeInstanceType } from './models/blocktime.model';
+import { LoggerService } from '../logger/logger.service';
 import moment from 'moment';
 
 @Injectable()
 export class BlockService {
   constructor(
+    readonly logger: LoggerService,
     readonly blockRespository: BlockRepositoryService,
   ) {}
 
-  indexBlockTimes(block: Block): Promise<BlockTimeInstanceType[]> {
+  indexBlockTimes(block: Block, calculate: boolean = false): Promise<BlockTimeInstanceType[]> {
     return Promise.all([
-      this.indexBlockTimeDay(block),
+      this.indexBlockTimeDay(block, calculate),
       this.indexBlockTimeAll(block),
     ]);
   }
@@ -21,7 +23,7 @@ export class BlockService {
     return this.blockRespository.find(granurality);
   }
 
-  private async indexBlockTimeDay(block: Block): Promise<BlockTimeInstanceType> {
+  private async indexBlockTimeDay(block: Block, calculate: boolean): Promise<BlockTimeInstanceType> {
     const blockDate = moment(block.timestamp);
     const granularity = BlockTimeGranularity.Day;
 
@@ -56,24 +58,28 @@ export class BlockService {
         return moment(sample.timestamp).isAfter(moment().subtract(1, 'day'));
       });
 
-      samples.sort((a, b) => a.timestamp - b.timestamp);
-
-      let previous = null;
-      const totalTime = samples.reduce((sum, sample) => {
-        if (!previous) {
-          previous = sample;
-          return 0;
-        }
-
-        const diff = moment(sample.timestamp).diff(moment(previous.timestamp));
-        previous = sample;
-        return sum + diff;
-      }, 0);
-
       blockTimeDay.blocks = samples.length - 1;
       blockTimeDay.samples = samples;
-      blockTimeDay.totalTime = totalTime;
-      blockTimeDay.time = blockTimeDay.blocks ? blockTimeDay.totalTime / blockTimeDay.blocks : blockTimeDay.blocks;
+
+      if (calculate) {
+        samples.sort((a, b) => a.timestamp - b.timestamp);
+
+        let previous = null;
+        const totalTime = samples.reduce((sum, sample) => {
+          if (!previous) {
+            previous = sample;
+            return 0;
+          }
+
+          const diff = moment(sample.timestamp).diff(moment(previous.timestamp));
+          previous = sample;
+          return sum + diff;
+        }, 0);
+        blockTimeDay.totalTime = totalTime;
+        blockTimeDay.time = blockTimeDay.blocks ? blockTimeDay.totalTime / blockTimeDay.blocks : blockTimeDay.blocks;
+      } else {
+        this.logger.debug('Not calculating, node not in sync yet');
+      }
     }
 
     return this.blockRespository.saveBlockTime(blockTimeDay);

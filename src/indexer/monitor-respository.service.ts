@@ -8,7 +8,7 @@ export class MonitorRespositoryService {
 
   constructor(
     @Inject(MODEL_STATE)
-    readonly stateModel: StateModelType
+    private readonly stateModel: StateModelType,
   ) {}
 
   async getProcessingHeight(): Promise<number> {

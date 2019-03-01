@@ -86,7 +86,7 @@ export class NodeService {
     }
 
     const data = responses.map((response: AxiosResponse) => response.data);
-    return [].concat(...data);
+    return [].concat(...data).sort((a, b) => a.height - b.height);
   }
 
   getBlockRanges(from: number, to: number): Array<{ from, to }> {
