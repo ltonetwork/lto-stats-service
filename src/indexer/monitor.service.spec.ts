@@ -37,7 +37,7 @@ describe('MonitorService', () => {
     const indexer = {
       index: jest.spyOn(indexerService, 'index')
         .mockImplementation(() => Promise.resolve(true)),
-      indexBlock: jest.spyOn(indexerService, 'indexBlock'),
+      indexBlock: jest.spyOn(indexerService, 'index'),
     };
 
     return { monitor, node, state, indexer };

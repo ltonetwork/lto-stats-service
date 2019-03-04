@@ -18,8 +18,17 @@ export class IndexerService {
   ) {
   }
 
-  indexBlock(block: Block, calculate: boolean): Promise<BlockTimeInstanceType[]> {
-    return this.blockService.indexBlockTimes(block, calculate);
+  async index(block: Block, calculate: boolean): Promise<boolean> {
+    if (this.lastBlock !== block.height) {
+      this.txCache = [];
+      await this.blockService.indexBlockTimes(block, calculate);
+    }
+    this.lastBlock = block.height;
+
+    for (const transaction of block.transactions) {
+      await this.indexTransaction(transaction, block.height);
+    }
+    return true;
   }
 
   /**
@@ -29,13 +38,7 @@ export class IndexerService {
    * @param transaction
    * @param blockHeight
    */
-  async index(transaction: Transaction, blockHeight: number): Promise<boolean> {
-    if (this.lastBlock !== blockHeight) {
-      this.txCache = [];
-    }
-
-    this.lastBlock = blockHeight;
-
+  async indexTransaction(transaction: Transaction, blockHeight: number): Promise<boolean> {
     if (this.txCache.indexOf(transaction.id) > -1) {
       // transaction is already processed
       return false;
