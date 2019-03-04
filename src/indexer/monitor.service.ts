@@ -4,13 +4,13 @@ import { LoggerService } from '../logger/logger.service';
 import { ConfigService } from '../config/config.service';
 import { NodeService } from '../node/node.service';
 import { MonitorRespositoryService } from './monitor-respository.service';
-import { Transaction } from './interfaces/transaction.interface';
 import { Block } from './interfaces/block.interface';
 import delay from 'delay';
 
 @Injectable()
 export class MonitorService {
   public processing: boolean;
+  private shutdown: boolean;
 
   constructor(
     private readonly logger: LoggerService,
@@ -18,7 +18,11 @@ export class MonitorService {
     private readonly node: NodeService,
     private readonly indexer: IndexerService,
     private readonly monitorState: MonitorRespositoryService,
-  ) {}
+  ) {
+    this.gracefullShutdown = this.gracefullShutdown.bind(this);
+    process.on('SIGTERM', this.gracefullShutdown);
+    process.on('SIGINT', this.gracefullShutdown);
+  }
 
   async start() {
     try {
@@ -50,38 +54,27 @@ export class MonitorService {
 
     for (const range of ranges) {
       this.logger.info(
-        `anchor: processing blocks ${range.from} to ${range.to}`,
+        `monitor: processing blocks ${range.from} to ${range.to}`,
       );
       const blocks = await this.node.getBlocks(range.from, range.to);
-
       for (const block of blocks) {
         await this.processBlock(block);
       }
 
       await this.monitorState.saveProcessingHeight(range.to);
+      if (this.shutdown) {
+        this.logger.info('Shutdown gracefully');
+        process.exit(1);
+      }
     }
 
     this.processing = false;
   }
 
   async processBlock(block: Block) {
-    this.logger.debug(`anchor: processing block ${block.height}`);
+    this.logger.debug(`monitor: processing block ${block.height}`);
 
-    await this.indexer.indexBlock(block, await this.isMonitorSynced());
-
-    let position = 0;
-    for (const transaction of block.transactions) {
-      await this.processTransaction(transaction, block.height, position);
-      position++;
-    }
-  }
-
-  async processTransaction(
-    transaction: Transaction,
-    blockHeight: number,
-    position: number,
-  ) {
-    const success = await this.indexer.index(transaction, blockHeight);
+    await this.indexer.index(block, await this.isMonitorSynced());
   }
 
   async isMonitorSynced() {
@@ -92,5 +85,10 @@ export class MonitorService {
     }
 
     return false;
+  }
+
+  async gracefullShutdown() {
+    this.logger.info('Shutting down');
+    this.shutdown = true;
   }
 }
