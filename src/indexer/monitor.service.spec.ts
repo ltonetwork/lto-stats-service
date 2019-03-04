@@ -18,7 +18,6 @@ describe('MonitorService', () => {
       process: jest.spyOn(monitorService, 'process'),
       checkNewBlocks: jest.spyOn(monitorService, 'checkNewBlocks'),
       processBlock: jest.spyOn(monitorService, 'processBlock'),
-      processTransaction: jest.spyOn(monitorService, 'processTransaction'),
     };
     const node = {
       getLastBlockHeight: jest.spyOn(nodeService, 'getLastBlockHeight')
@@ -93,7 +92,6 @@ describe('MonitorService', () => {
   describe('processBlock()', () => {
     test('should process the block', async () => {
       const spies = spy();
-      spies.monitor.processTransaction.mockImplementation();
       spies.indexer.indexBlock.mockImplementation();
 
       const block = {
@@ -106,28 +104,6 @@ describe('MonitorService', () => {
 
       expect(spies.indexer.indexBlock.mock.calls.length).toBe(1);
       expect(spies.indexer.indexBlock.mock.calls[0][0]).toEqual(block);
-      expect(spies.monitor.processTransaction.mock.calls.length).toBe(2);
-      expect(spies.monitor.processTransaction.mock.calls[0][0]).toEqual(block.transactions[0]);
-      expect(spies.monitor.processTransaction.mock.calls[1][0]).toEqual(block.transactions[1]);
-    });
-  });
-
-  describe('processTransaction()', () => {
-    test('should process the anchor transaction', async () => {
-      const spies = spy();
-
-      const transaction = {
-        id: 'fake_transaction',
-        type: 15,
-        anchors: [
-          '3zLWTHPNkmDsCRi2kZqFXFSBnTYykz13gHLezU4p6zmu',
-        ],
-      };
-      await monitorService.processTransaction(transaction as any, 1, 0);
-
-      expect(spies.indexer.index.mock.calls.length).toBe(1);
-      expect(spies.indexer.index.mock.calls[0][0]).toEqual(transaction);
-
     });
   });
 });
