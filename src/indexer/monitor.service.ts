@@ -18,7 +18,9 @@ export class MonitorService {
     private readonly node: NodeService,
     private readonly indexer: IndexerService,
     private readonly monitorState: MonitorRespositoryService,
-  ) {
+  ) {}
+
+  onModuleInit() {
     this.gracefullShutdown = this.gracefullShutdown.bind(this);
     process.on('SIGTERM', this.gracefullShutdown);
     process.on('SIGINT', this.gracefullShutdown);
@@ -32,13 +34,22 @@ export class MonitorService {
       await this.process();
     } catch (e) {
       this.processing = false;
-      throw e;
     }
   }
 
   async process() {
     if (!this.processing) {
-      await this.checkNewBlocks();
+      try {
+        await this.checkNewBlocks();
+      } catch (e) {
+        this.processing = false;
+        this.logger.error('Failed to check for new blocks');
+      }
+    }
+
+    if (this.shutdown) {
+      this.logger.info('Shutdown gracefully');
+      process.exit(1);
     }
 
     await delay(this.config.getMonitorInterval());
