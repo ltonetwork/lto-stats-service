@@ -1,3 +1,5 @@
+Stats are indexed by the [indexer service](https://github.com/ltonetwork/indexer).
+
 ## Description
 
 LT Start project for quick starting an application
